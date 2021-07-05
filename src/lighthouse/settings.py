@@ -15,6 +15,8 @@ from pathlib import Path
 import platform
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 
@@ -33,7 +35,7 @@ ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
-    "api",
+    'api.apps.MainConfig',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -129,6 +131,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 STATIC_URL = "/static/"
 
+REST_FRAMEWORK = {
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+}
 
 django_heroku.settings(locals())
 if platform.system() != "Windows":

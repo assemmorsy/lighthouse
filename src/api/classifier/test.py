@@ -1,4 +1,4 @@
-from singleton import Singleton
+'''from singleton import Singleton
 
 from classifier import Model
 
@@ -16,3 +16,4 @@ embedding = str(embedding)
 print(embedding)
 print(len(embedding))
 print(type(embedding))
+'''

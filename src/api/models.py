@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class User(AbstractUser):
+
     def serialize(self):
         return {
             "id": self.id,
