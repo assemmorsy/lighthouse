@@ -49,5 +49,4 @@ class MissingPersonTestViews(TestSetUp):
             add_missing_response = self.client.post(self.missing_person_url,
                                                     data,
                                                     format='multipart')
-        import pdb
-        pdb.set_trace()
+
