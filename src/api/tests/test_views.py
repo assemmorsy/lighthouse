@@ -2,6 +2,7 @@ from .test_setup import TestSetUp
 from rest_framework import status
 from django.http import JsonResponse
 
+
 class UserTestViews(TestSetUp):
 
     def test_user_can_register_correctly(self):
@@ -41,12 +42,14 @@ class UserTestViews(TestSetUp):
 
 
 class MissingPersonTestViews(TestSetUp):
-    # very academy
+
     def test_add_missing_person_correctly(self):
         with open('images/image.jpg', 'rb') as img:
-            data = {'image': img, 'name': self.fake.email().split("@")[0]}
-            print(self.jwt_token)
-            add_missing_response = self.client.post(self.missing_person_url,
-                                                    data,
-                                                    format='multipart')
+            missing_person_name = self.fake.email().split("@")[0]
+            data = {'image': img, 'name': missing_person_name}
+            add_missing_response = self.client.post(self.missing_person_url, data, format='multipart')
+            add_missing_res_content = self.byteToDict(add_missing_response.content)
+            self.assertEqual(add_missing_res_content['name'], missing_person_name)
+            self.assertEqual(add_missing_response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(add_missing_res_content['reported_by']['user'], self.register_data['username'])
 

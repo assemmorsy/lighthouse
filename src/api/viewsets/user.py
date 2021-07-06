@@ -75,3 +75,4 @@ class LogoutViewSet(BaseViewSet):
         response.delete_cookie("jwt")
         response.data = {"message": "success"}
         return response
+

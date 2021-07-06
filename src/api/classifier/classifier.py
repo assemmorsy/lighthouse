@@ -15,7 +15,7 @@ class Model(metaclass=Singleton):
         """Takes an image with only the desired face"""
         image = self.get_image_from_url(image.url)
         preprocessed_face = functions.preprocess_face(
-            image, target_size=self.target_size, detector_backend="mtcnn"
+            image, target_size=self.target_size, detector_backend="mtcnn", enforce_detection=False
         )
         return self.model.predict(preprocessed_face)[0]
 
