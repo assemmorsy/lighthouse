@@ -1,9 +1,6 @@
-import faker
-
 from .test_setup import TestSetUp
 from rest_framework import status
 from django.http import JsonResponse
-
 
 class UserTestViews(TestSetUp):
 
@@ -44,16 +41,13 @@ class UserTestViews(TestSetUp):
 
 
 class MissingPersonTestViews(TestSetUp):
-
+    # very academy
     def test_add_missing_person_correctly(self):
-        upload = {
-            'image': open('images/image.jpg', 'rb')
-        }
-        data = {
-            'name': self.fake.email().split("@")[0],
-        }
-        request = JsonResponse(data)
-        request.set_cookie(key="jwt", value=self.jwt_token, httponly=True)
-        add_missing_response = self.client.post(self.missing_person_url, files=upload, data=request)
+        with open('images/image.jpg', 'rb') as img:
+            data = {'image': img, 'name': self.fake.email().split("@")[0]}
+            print(self.jwt_token)
+            add_missing_response = self.client.post(self.missing_person_url,
+                                                    data,
+                                                    format='multipart')
         import pdb
         pdb.set_trace()
