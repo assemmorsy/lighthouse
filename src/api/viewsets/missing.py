@@ -20,13 +20,15 @@ class MissingViewSet(BaseViewSet):
         data = self.request.POST
         name = data["name"]
         image = files["image"]
+
         try:
             user = get_user(self.request)
             person = models.KnownMissingPerson(
                 contactPerson=user, name=name, image=image
             )
+
             person.save()
-            threading.Thread(target=self.save_embedding, args=[person]).start()
+            # threading.Thread(target=self.save_embedding, args=[person]).start()
             return JsonResponse(person.serialize(), status=201)
         except IntegrityError as e:
             print(str(e))
@@ -59,17 +61,21 @@ class MissingIdViewSet(BaseViewSet):
             return JsonResponse(person, safe=False)
         except ObjectDoesNotExist as e:
             print(str(e))
-            return JsonResponse({"message": "User Does not exist"}, status=500)
+            # update status code 404
+            return JsonResponse({"message": "User Does not exist"}, status=404)
 
     def delete(self):
         try:
             person = models.KnownMissingPerson.objects.get(id=self.pk)
             person.delete()
-            SearchIndex().delete(self.pk)
-            return JsonResponse({"message": "deleted"}, status=204)
+            #SearchIndex().delete(self.pk)
+
+            # update status code 202
+            return JsonResponse({"message": "deleted"}, status=202)
         except ObjectDoesNotExist as e:
             print(str(e))
-            return JsonResponse({"message": "User Does not exist"}, status=204)
+            # update status code 404
+            return JsonResponse({"message": "User Does not exist"}, status=404)
 
     def patch(self):
         person = models.KnownMissingPerson.objects.get(id=self.pk)
@@ -79,5 +85,4 @@ class MissingIdViewSet(BaseViewSet):
             if isinstance(value, list):
                 value = value[0]
             setattr(person, attribute, value)
-        person.save()
         return JsonResponse(person.serialize(), status=202)
