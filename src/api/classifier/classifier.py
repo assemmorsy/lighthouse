@@ -28,3 +28,5 @@ class Model(metaclass=Singleton):
             return "image.jpg"
         else:
             return "." + url
+
+

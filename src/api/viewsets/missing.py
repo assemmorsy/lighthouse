@@ -8,6 +8,7 @@ from ..classifier.classifier import Model
 import threading
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.datastructures import MultiValueDictKeyError
+import json
 
 
 class MissingViewSet(BaseViewSet):
@@ -26,9 +27,8 @@ class MissingViewSet(BaseViewSet):
             person = models.KnownMissingPerson(
                 contactPerson=user, name=name, image=image
             )
-
             person.save()
-            # threading.Thread(target=self.save_embedding, args=[person]).start()
+            threading.Thread(target=self.save_embedding, args=[person]).start()
             return JsonResponse(person.serialize(), status=201)
         except IntegrityError as e:
             print(str(e))
@@ -36,7 +36,8 @@ class MissingViewSet(BaseViewSet):
 
     def save_embedding(self, person):
         embedding = Model().get_embedding(person.image)
-        person.embedding = str(embedding)
+        emb = " ".join(map(str, embedding.tolist()))
+        person.embedding = emb
         person.save()
         SearchIndex().push(embedding, person.id)
         print("posted")
@@ -68,7 +69,7 @@ class MissingIdViewSet(BaseViewSet):
         try:
             person = models.KnownMissingPerson.objects.get(id=self.pk)
             person.delete()
-            #SearchIndex().delete(self.pk)
+            SearchIndex().delete(self.pk)
 
             # update status code 202
             return JsonResponse({"message": "deleted"}, status=202)

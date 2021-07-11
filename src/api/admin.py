@@ -4,11 +4,12 @@ from .models import (
     KnownMissingPerson,
     KnownMissingPersonTrackRecord,
     UnknownMissingPersonTrackRecord,
-    KnownMissingPersonImages,
-)
+    KnownMissingPersonImages,User,Quereies)
 
 admin.site.register(UnKnownMissingPerson)
 admin.site.register(KnownMissingPerson)
 admin.site.register(UnknownMissingPersonTrackRecord)
 admin.site.register(KnownMissingPersonTrackRecord)
 admin.site.register(KnownMissingPersonImages)
+admin.site.register(User)
+admin.site.register(Quereies)

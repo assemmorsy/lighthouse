@@ -18,6 +18,7 @@ class UserManager(BaseUserManager):
 class KnownMissingPerson(models.Model):
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to="knownMissingPersonsImages")
+    embedding = models.JSONField(blank=True, null=True)
     contactPerson = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -45,7 +46,6 @@ class KnownMissingPersonImages(models.Model):
         related_name="knownMissingPersonsImages",
     )
     image = models.ImageField(upload_to="knownMissingPersonsImages")
-
     def __str__(self):
         return f"image for {self.missingPerson}"
 

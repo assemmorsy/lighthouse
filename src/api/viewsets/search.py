@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 from .base import BaseViewSet
 from ..classifier.classifier import Model
-from ..classifier.index import SearchIndex
+from ..classifier.sim_index import SearchIndex
 from ..models import KnownMissingPerson, Quereies
 import threading
 import json
@@ -38,6 +38,7 @@ class FindMissingViewSet(BaseViewSet):
         query_res = {}
         index = SearchIndex()
         result = index.search(embedded_image, 3)
+
         for i in result["hits"]["hits"]:
             score = i["_score"]
             id = i["_id"]
