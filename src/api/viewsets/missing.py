@@ -69,7 +69,6 @@ class MissingIdViewSet(BaseViewSet):
             person = models.KnownMissingPerson.objects.get(id=self.pk)
             person.delete()
             SearchIndex().delete(self.pk)
-
             # update status code 202
             return JsonResponse({"message": "deleted"}, status=202)
         except ObjectDoesNotExist as e:
@@ -85,5 +84,5 @@ class MissingIdViewSet(BaseViewSet):
             if isinstance(value, list):
                 value = value[0]
             setattr(person, attribute, value)
-            person.save()
+        person.save()
         return JsonResponse(person.serialize(), status=202)
