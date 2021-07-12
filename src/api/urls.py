@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .classifier.index import SearchIndex
+#from .classifier.index import SearchIndex
 
 urlpatterns = [
     path("missing", views.missing, name="missing"),
@@ -15,5 +15,5 @@ urlpatterns = [
     path("result", views.get_search_result, name="result"),
 ]
 
-# init search index once the server up
-SearchIndex()
+#init search index once the server up
+#SearchIndex()
