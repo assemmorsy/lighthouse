@@ -1,51 +1,52 @@
-from elasticsearch import Elasticsearch, RequestError
+
 from .singleton import Singleton
+from ..models import KnownMissingPerson
+
+from numpy import dot, asarray
+from numpy.linalg import norm
 
 
 class SearchIndex(metaclass=Singleton):
     def __init__(self):
+        self.dataset = {}
+        people = KnownMissingPerson.objects.all()
+        for person in people:
+            if person.embedding is not None:
+                self.push(person.embedding, person.id)
+        print(f" ==== {len(self.dataset)} elements added from database ====")
 
-        self.es = Elasticsearch([{"host": "localhost", "port": "9200"}])
+    def push(self, emb, index):
 
-        mapping = {
-            "mappings": {
-                "properties": {
-                    "title_vector": {"type": "dense_vector", "dims": 128},
-                    "title_name": {"type": "keyword"},
-                }
-            }
-        }
-
-        try:
-            self.es.indices.create(index="final_face_recognition", body=mapping)
-
-        except RequestError:
-            print("Index already exists!!")
-
-    def push(self, emb, index, image_name=None):
-        doc = {"title_vector": emb, "title_name": image_name}
-        self.es.create("final_face_recognition", id=index, body=doc)
+        if type(emb) is str:
+            db_emb = asarray(list(map(lambda x: float(x), emb.split(" "))))
+        else:
+            db_emb = emb
+        if (index not in self.dataset) or (index in self.dataset and self.dataset[index] == ""):
+            self.dataset[index] = db_emb
+        else:
+            print(" ==== index is already added ! ====")
 
     def delete(self, index):
-        self.es.delete(index="final_face_recognition", id=index)
+        if index in self.dataset:
+            self.dataset.pop(index)
+        else:
+            print("index is not in dataset !")
 
-    def search(self, emb, size):
-        """
-        size : # nearest neighbours
-        """
-        query = {
-            "size": size,  # foe ex 5 nearest neighbours
-            "query": {
-                "script_score": {
-                    "query": {"match_all": {}},
-                    "script": {
-                        "source": "cosineSimilarity(params.queryVector, 'title_vector')+1",
-                        # "source": "1 / (1 + l2norm(params.queryVector, 'title_vector'))", #euclidean distance
-                        "params": {"queryVector": list(emb)},
-                    },
-                }
-            },
-        }
+    def search(self, emb, dumyNum):
+        result = {'hits': {'hits': []}}
+        if len(self.dataset) == 0:
+            print(" ===== no items in the dataset ==== ")
+            return result
 
-        res = self.es.search(index="final_face_recognition", body=query)
-        return res
+        for index, element_Emb in self.dataset.items():
+            element_similarity = self.get_similarity(element_Emb, emb)
+            result['hits']['hits'].append({"_score": element_similarity, "_id": index})
+
+        return result
+
+    def patch(self, emb, index):
+        pass
+
+    def get_similarity(self, emb1, emb2):
+        print(f"elements in dataset  : {len(self.dataset)} ==========>")
+        return (dot(emb1, emb2) / (norm(emb1)*norm(emb2))) + 1

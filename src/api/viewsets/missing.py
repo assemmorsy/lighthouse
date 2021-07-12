@@ -3,12 +3,11 @@ from django.http import JsonResponse
 from django.db import IntegrityError
 from .base import BaseViewSet
 from ..utils import get_user
-from ..classifier.sim_index import SearchIndex
+from ..classifier.index import SearchIndex
 from ..classifier.classifier import Model
 import threading
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.datastructures import MultiValueDictKeyError
-import json
 
 
 class MissingViewSet(BaseViewSet):
@@ -86,4 +85,5 @@ class MissingIdViewSet(BaseViewSet):
             if isinstance(value, list):
                 value = value[0]
             setattr(person, attribute, value)
+            person.save()
         return JsonResponse(person.serialize(), status=202)

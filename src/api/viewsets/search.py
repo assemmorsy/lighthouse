@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 from .base import BaseViewSet
 from ..classifier.classifier import Model
-from ..classifier.sim_index import SearchIndex
+from ..classifier.index import SearchIndex
 from ..models import KnownMissingPerson, Quereies
 import threading
 import json
