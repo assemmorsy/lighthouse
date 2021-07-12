@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from .classifier.sim_index import SearchIndex
 
 urlpatterns = [
     path("missing", views.missing, name="missing"),
@@ -13,3 +14,6 @@ urlpatterns = [
     path("profile", views.profile, name="profile"),
     path("result", views.get_search_result, name="result"),
 ]
+
+# init search index once the server up
+SearchIndex()

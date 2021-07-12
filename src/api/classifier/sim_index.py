@@ -13,13 +13,20 @@ class SearchIndex(metaclass=Singleton):
         self.dataset = {}
         people = KnownMissingPerson.objects.all()
         for person in people:
-            self.push(person.embedding,person.id)
+            if person.embedding is not None:
+                self.push(person.embedding, person.id)
+        print(f" ==== {len(self.dataset)} elements added from database ====")
 
     def push(self, emb, index):
-        if index not in self.dataset:
-            self.dataset[index] = emb
+
+        if type(emb) is str:
+            db_emb = asarray(list(map(lambda x: float(x), emb.split(" "))))
         else:
-            print("index is already added !")
+            db_emb = emb
+        if (index not in self.dataset) or (index in self.dataset and self.dataset[index] == ""):
+            self.dataset[index] = db_emb
+        else:
+            print(" ==== index is already added ! ====")
 
     def delete(self, index):
         if index in self.dataset:
@@ -29,10 +36,12 @@ class SearchIndex(metaclass=Singleton):
 
     def search(self, emb, dumyNum):
         result = {'hits': {'hits': []}}
-        for index, element_Emb in self.dataset.items():
-            db_emb = asarray(list(map(lambda x: float(x), element_Emb.split(" "))))
+        if len(self.dataset) == 0:
+            print(" ===== no items in the dataset ==== ")
+            return result
 
-            element_similarity = self.get_similarity(db_emb, emb)
+        for index, element_Emb in self.dataset.items():
+            element_similarity = self.get_similarity(element_Emb, emb)
             result['hits']['hits'].append({"_score": element_similarity, "_id": index})
 
         return result
@@ -41,4 +50,5 @@ class SearchIndex(metaclass=Singleton):
         pass
 
     def get_similarity(self, emb1, emb2):
-        return dot(emb1, emb2) / (norm(emb1)*norm(emb2))
+        print(f"elements in dataset  : {len(self.dataset)} ==========>")
+        return (dot(emb1, emb2) / (norm(emb1)*norm(emb2))) + 1

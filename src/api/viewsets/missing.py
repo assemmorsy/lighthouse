@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.db import IntegrityError
 from .base import BaseViewSet
 from ..utils import get_user
-from ..classifier.index import SearchIndex
+from ..classifier.sim_index import SearchIndex
 from ..classifier.classifier import Model
 import threading
 from django.core.exceptions import ObjectDoesNotExist
